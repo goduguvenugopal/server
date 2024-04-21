@@ -5,8 +5,9 @@ const mongoose = require("mongoose");
 const dotEnv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const {Register } = require("./Model");
+const { Register } = require("./Model");
 const jwt = require("jsonwebtoken");
+const middleware = require("./middleware");
 
 // Middlewares
 dotEnv.config();
@@ -40,7 +41,7 @@ app.post("/login", async (req, res) => {
 
     let payload = {
       user: {
-        id: exist.id
+        id: exist.id,
       },
     };
 
@@ -48,9 +49,6 @@ app.post("/login", async (req, res) => {
       if (error) throw error;
       return res.json({ token });
     });
-
-   
-
   } catch (error) {
     console.error("Error occurred while login user:", error);
     res.status(500).json({ message: "Error occurred while login user" });
@@ -78,6 +76,21 @@ app.post("/register", async (req, res) => {
   } catch (error) {
     console.error("Error occurred while registering user:", error);
     res.status(500).json({ message: "Error occurred while registering user" });
+  }
+});
+
+// get profile route
+
+app.get("/profile", middleware, async (req, res) => {
+  try {
+    let exist = await Register.findById(req.user.id);
+    if (!exist) {
+      return res.status(400).send("user not found");
+    }
+    res.json(exist);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("server error");
   }
 });
 
