@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const dotEnv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { Login, Register } = require("./Model");
+const {Register } = require("./Model");
 const jwt = require("jsonwebtoken");
 
 // Middlewares
@@ -49,7 +49,7 @@ app.post("/login", async (req, res) => {
       return res.json({ token });
     });
 
-    res.status(200).json(exist);
+   
 
   } catch (error) {
     console.error("Error occurred while login user:", error);

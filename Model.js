@@ -26,24 +26,24 @@ const registerSchema = new mongoose.Schema({
   const Register = mongoose.model("Register", registerSchema);
 
 
-// Login schema
-const loginSchema = new mongoose.Schema({
-    email: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-  });
+// // Login schema
+// const loginSchema = new mongoose.Schema({
+//     email: {
+//       type: String,
+//       required: true,
+//     },
+//     password: {
+//       type: String,
+//       required: true,
+//     },
+//   });
   
-  const Login = mongoose.model("Login", loginSchema);
+//   const Login = mongoose.model("Login", loginSchema);
 
   
 
   module.exports = {
-    Register,
-    Login
+    Register
+    
   }
   
