@@ -58,7 +58,7 @@ app.post("/login", async (req, res) => {
 // Route for user register
 app.post("/register", async (req, res) => {
   try {
-    const { name, email, password, confirmpassword } = req.body;
+    const { email, password, confirmpassword } = req.body;
 
     const existingUser = await Register.findOne({ email });
     if (existingUser) {
@@ -69,7 +69,7 @@ app.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    const newUser = new Register({ name, email, password, confirmpassword });
+    const newUser = new Register({ email, password, confirmpassword });
 
     await newUser.save();
     res.status(201).json(newUser);

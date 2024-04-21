@@ -4,10 +4,7 @@ const mongoose = require("mongoose");
 // register schema
 
 const registerSchema = new mongoose.Schema({
-    name: {
-      type: String,
-       
-    },
+    
     email: {
       type: String,
       required: true,
