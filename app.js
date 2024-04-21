@@ -40,7 +40,7 @@ app.post("/login", async (req, res) => {
 
     let payload = {
       user: {
-        _id: exist._id,
+        id: exist.id
       },
     };
 
@@ -50,7 +50,7 @@ app.post("/login", async (req, res) => {
     });
 
     res.status(200).json(exist);
-    
+
   } catch (error) {
     console.error("Error occurred while login user:", error);
     res.status(500).json({ message: "Error occurred while login user" });
