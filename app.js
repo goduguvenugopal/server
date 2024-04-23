@@ -42,7 +42,7 @@ app.post("/login", async (req, res) => {
  
    const token =  jwt.sign({tokenId : exist._id}, "venu");
 
-    res.status(200).json(exist , token)
+    res.status(200).json({exist , token})
 
   } catch (error) {
     console.error("Error occurred while login user:", error);
