@@ -7,7 +7,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { Register } = require("./Model");
 const jwt = require("jsonwebtoken");
-const middleware = require("./middleware");
+// const middleware = require("./middleware");
+const bcrypt = require("bcryptjs");
 
 // Middlewares
 dotEnv.config();
@@ -31,24 +32,18 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     const exist = await Register.findOne({ email });
-    if (!exist) {
+
+    
+    if (!exist || !await bcrypt.compare(password , exist.password)) {
       return res.status(400).json({ message: "User not found" });
     }
 
-    if (exist.password !== password) {
-      return res.status(400).json({ message: "Password incorrect" });
-    }
+    
+ 
+   const token =  jwt.sign({tokenId : exist._id}, "venu");
 
-    let payload = {
-      user: {
-        id: exist.id,
-      },
-    };
+    res.status(200).json(exist , token)
 
-    jwt.sign(payload, "venu", (error, token) => {
-      if (error) throw error;
-      return res.json({ token });
-    });
   } catch (error) {
     console.error("Error occurred while login user:", error);
     res.status(500).json({ message: "Error occurred while login user" });
@@ -65,11 +60,14 @@ app.post("/register", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    if (password !== confirmpassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedConfirmPassword = await bcrypt.hash(confirmpassword, 10);
 
-    const newUser = new Register({ email, password, confirmpassword });
+    const newUser = new Register({
+      email,
+      password: hashedPassword,
+      confirmpassword: hashedConfirmPassword,
+    });
 
     await newUser.save();
     res.status(201).json(newUser);
@@ -81,18 +79,18 @@ app.post("/register", async (req, res) => {
 
 // get profile route
 
-app.get("/profile", middleware, async (req, res) => {
-  try {
-    let exist = await Register.findById(req.user.id);
-    if (!exist) {
-      return res.status(400).send("user not found");
-    }
-    res.json(exist);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("server error");
-  }
-});
+// app.get("/profile", middleware, async (req, res) => {
+//   try {
+//     let exist = await Register.findById(req.user.id);
+//     if (!exist) {
+//       return res.status(400).send("user not found");
+//     }
+//     res.json(exist);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send("server error");
+//   }
+// });
 
 // Listen for incoming requests
 app.listen(port, () => {
