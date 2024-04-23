@@ -5,9 +5,8 @@ const mongoose = require("mongoose");
 const dotEnv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { Register } = require("./Model");
+const { Register, profile } = require("./Model");
 const jwt = require("jsonwebtoken");
-// const middleware = require("./middleware");
 const bcrypt = require("bcryptjs");
 
 // Middlewares
@@ -33,17 +32,13 @@ app.post("/login", async (req, res) => {
 
     const exist = await Register.findOne({ email });
 
-    
-    if (!exist || !await bcrypt.compare(password , exist.password)) {
+    if (!exist || !(await bcrypt.compare(password, exist.password))) {
       return res.status(400).json({ message: "User not found" });
     }
 
-    
- 
-   const token =  jwt.sign({tokenId : exist._id}, "venu");
+    const token = jwt.sign({ tokenId: exist._id }, "venu");
 
-    res.status(200).json({exist , token})
-
+    res.status(200).json({ exist, token });
   } catch (error) {
     console.error("Error occurred while login user:", error);
     res.status(500).json({ message: "Error occurred while login user" });
@@ -77,20 +72,24 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// get profile route
+// profile controller post method function
 
-// app.get("/profile", middleware, async (req, res) => {
-//   try {
-//     let exist = await Register.findById(req.user.id);
-//     if (!exist) {
-//       return res.status(400).send("user not found");
-//     }
-//     res.json(exist);
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send("server error");
-//   }
-// });
+app.post("/profile", async (req, res) => {
+  try {
+    const { name, phone, address } = req.body;
+
+    if(!name || !phone || !address ){
+      res.status(400).json({message : " Missing required fields"})
+    }
+
+    const users = new profile({ name, phone, address });
+    await users.save();
+    res.status(200).json(users);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "error at server" });
+  }
+});
 
 // Listen for incoming requests
 app.listen(port, () => {
